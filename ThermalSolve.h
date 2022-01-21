@@ -16,7 +16,7 @@ const int T_initial = 80;
 
 /// properties of water
 const int cp = 4200;
-const int rho = 980, PI{3.14159265};
+const int rho = 980; const double PI{3.14159265};
 
 namespace ThermalSol{
     void ThermalSolve(){
