@@ -96,10 +96,10 @@ namespace ThermalSol{
 
         //! read pipes' lengths, diameter and U value from the Pipes_information file
 
-        MatrixXd data_3 = openData("data/Pipes_information.csv");
-//        VectorXd length = data_3.col(0);
-//        VectorXd diameters = data_3.col(2);
-//        VectorXd U = data_3.col(5);
+        MatrixXd data_3 = openData("data/Pipes_information0.csv");
+ //       VectorXd length = data_3.col(0);
+ //       VectorXd diameters = data_3.col(2);
+//        VectorXd U = data_3.col(4);
 //        VectorXd A = pow(diameters.array(), 2)*PI/4;
 //
 //        //! time and spatial steps
