@@ -96,78 +96,81 @@ namespace ThermalSol{
 
         //! read pipes' lengths, diameter and U value from the Pipes_information file
 
-        MatrixXd data_3 = openData("data/Pipes_information0.csv");
- //       VectorXd length = data_3.col(0);
- //       VectorXd diameters = data_3.col(2);
-//        VectorXd U = data_3.col(4);
-//        VectorXd A = pow(diameters.array(), 2)*PI/4;
+        MatrixXd data_3 = openData("data/Pipes_information00.csv");
+        VectorXd length = data_3.col(0);
+        VectorXd diameters = data_3.col(1);
+        VectorXd U = data_3.col(4);
+        VectorXd A = pow(diameters.array(), 2)*PI/4;
 //
-//        //! time and spatial steps
-//        const int dx = 20;
-//        VectorXd delta_x = length/dx;
-//        const int delta_t = 60;
-//
-//        //! Solution
-//        MatrixXd T_deltat = MatrixXd::Zero(159, dx+1);
-//        T_deltat.setConstant(80);
-//        VectorXd T_t = VectorXd::Zero( dx+1);
-//        VectorXd T_input = VectorXd::Zero(n);
-//        T_input.setConstant(T_initial);
-//        MatrixXd T_output = MatrixXd::Zero(168, m);
-//        MatrixXd T_final_outlet = VectorXd::Zero( n);
-//        MatrixXd results = MatrixXd::Zero(168, n);
-//        MatrixXi in_node_Xi = in_node.cast<int>();
-//        MatrixXi out_node_Xi = out_node.cast<int>();
-//        for(int i{0}; i < step; ++i){
-//            for(int j{0}; j < m; ++j){
-//                if (data_2(i, j) < 0){
-//                    int S = out_node_Xi(i, j);
-//                    int N = in_node_Xi(i, j);
-//                    out_node_Xi(i, j) = N;
-//                    in_node_Xi(i, j) = S;
-//                 }
-//                double C1 = 2*delta_t*U(j)/A(j)/rho/cp;
-//                double C2 = 2*std::fabs(data_2(i, j))*delta_t/rho/A(j)/delta_x(j);
-//                double C = 1/(1+C1+C2);
-//                T_t(0) = T_input(in_node_Xi(i, j));
-//                for(int z{0}; z < 60; ++z){
-//                    for(int k{0}; k < dx; ++k){
-//                        T_t( k+1) = C*(T_deltat(j, k+1)+ C1*Tg + C2*T_t(k));
-//                    }
-//                    T_deltat.row(j) = T_t;
-//                }
-//                T_output(i, j) = T_t(dx);
-//            }
-//            for(int nodes{0}; nodes < n; ++nodes ){
-//                int T_tot, G_tot, Count = 0;
-//                for(int pipes{0}; pipes < m; ++ pipes){
-//                    if(out_node(i, pipes) == nodes){
-//                        ++Count;
-//                        //T_final_outlet(nodes) = T_output(i, pipes);
-//                    }
-//                }
-//                if(Count > 1){
-//                    for(int pipes{0}; pipes < m; ++ pipes){
-//                        if(out_node(i, pipes) == nodes){
-//                            T_tot = + T_output(i, pipes)*std::fabs(data_2(i, pipes));
-//                            G_tot = + std::fabs(data_2(i, pipes));
-//                        }
-//                    }
-//                    T_final_outlet(nodes) = T_tot/G_tot;
-//                }else{
+        //! time and spatial steps
+        const int dx = 20;
+        VectorXd delta_x = length/dx;
+        const int delta_t = 60;
+
+        //! Solution
+        MatrixXd T_deltat = MatrixXd::Zero(159, dx+1);
+        T_deltat.setConstant(80);
+        VectorXd T_t = VectorXd::Zero( dx+1);
+        VectorXd T_input = VectorXd::Zero(n);
+        T_input.setConstant(T_initial);
+        MatrixXd T_output = MatrixXd::Zero(168, m);
+        MatrixXd T_final_outlet = VectorXd::Zero( n);
+        MatrixXd results = MatrixXd::Zero(168, n);
+        MatrixXi in_node_Xi = in_node.cast<int>();
+        MatrixXi out_node_Xi = out_node.cast<int>();
+        for(int i{0}; i < step; ++i){
+            for(int j{0}; j < m; ++j){
+                if (data_2(i, j) < 0){
+                    int S = out_node_Xi(i, j);
+                    int N = in_node_Xi(i, j);
+                    out_node_Xi(i, j) = N;
+                    in_node_Xi(i, j) = S;
+                 }
+                double C1 = 2*delta_t*U(j)/A(j)/rho/cp;
+                double C2 = 2*std::fabs(data_2(i, j))*delta_t/rho/A(j)/delta_x(j);
+                double C = 1/(1+C1+C2);
+                T_t(0) = T_input(in_node_Xi(i, j));
+                for(int z{0}; z < 60; ++z){
+                    for(int k{0}; k < dx; ++k){
+                        T_t( k+1) = C*(T_deltat(j, k+1)+ C1*Tg + C2*T_t(k));
+                    }
+                    T_deltat.row(j) = T_t;
+                }
+                T_output(i, j) = T_t(dx);
+            }
+            for(int nodes{0}; nodes < n; ++nodes ){
+                int T_tot, G_tot, Count = 0;
+                for(int pipes{0}; pipes < m; ++ pipes){
+                    if(out_node(i, pipes) == nodes){
+                        ++Count;
+                        //T_final_outlet(nodes) = T_output(i, pipes);
+                    }
+                }
+                if(Count > 0){
+                    for(int pipes{0}; pipes < m; ++ pipes){
+                        if(out_node(i, pipes) == nodes){
+                            T_tot = + T_output(i, pipes)*abs(data_2(i, pipes));
+                            G_tot = + abs(data_2(i, pipes));
+                            std::cerr << "check first\n";
+                        }
+                    }
+                    T_final_outlet(nodes) = T_tot/G_tot;
+
+                }else{
+                    std::cerr << "checking\n";
 //                    for(int pipes{0}; pipes < m; ++ pipes){
 //                        if(out_node(i, pipes) == nodes){
 //                            T_final_outlet(nodes) = T_output(i, pipes);
 //                        }
 //                    }
-//                }
-//            }
+                }
+            }
 //            T_final_outlet(148) = 80;
 //            T_final_outlet(149) = 80;
 //            T_final_outlet(150) = 80;
 //            T_input = T_final_outlet;
 //            results.row(i-1) = T_final_outlet;
-//        }
+        }
 
 
 
@@ -177,7 +180,6 @@ namespace ThermalSol{
 
 
     }
-
 
 
 }
