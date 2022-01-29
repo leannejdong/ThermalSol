@@ -151,7 +151,7 @@ namespace ThermalSol{
                         if(out_node(i, pipes) == nodes){
                             T_tot = + T_output(i, pipes)*abs(data_2(i, pipes));
                             G_tot = + abs(data_2(i, pipes));
-                            std::cerr << "check first\n";
+                            std::cerr << "check final outlet\n";
                         }
                     }
                     T_final_outlet(nodes) = T_tot/G_tot;
