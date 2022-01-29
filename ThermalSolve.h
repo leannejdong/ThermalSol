@@ -139,7 +139,7 @@ namespace ThermalSol{
                 T_output(i, j) = T_t(dx);
             }
             for(int nodes{0}; nodes < n; ++nodes ){
-                int T_tot, G_tot, Count = 0;
+                int T_tot{0}, G_tot{0}, Count{0};
                 for(int pipes{0}; pipes < m; ++ pipes){
                     if(out_node(i, pipes) == nodes){
                         ++Count;
