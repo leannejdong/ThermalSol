@@ -165,21 +165,12 @@ namespace ThermalSol{
                     }
                 }
             }
-
             T_final_outlet(147) = 80;
             T_final_outlet(148) = 80;
             T_final_outlet(149) = 80;
             T_input = T_final_outlet;
-            results.row(i) = T_final_outlet;
+            results.row(i) = T_final_outlet.transpose();
         }
-
-
-
-
-
-
-
-
     }
 
 
