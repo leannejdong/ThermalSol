@@ -139,37 +139,38 @@ namespace ThermalSol{
                 T_output(i, j) = T_t(dx);
             }
             for(int nodes{0}; nodes < n; ++nodes ){
-                int T_tot{0}, G_tot{0}, Count{0};
+                double T_tot{0}, G_tot{0}; int Count{0};
                 for(int pipes{0}; pipes < m; ++ pipes){
                     if(out_node(i, pipes) == nodes){
                         ++Count;
                         //T_final_outlet(nodes) = T_output(i, pipes);
                     }
                 }
-                if(Count > 0){
+                if(Count > 1){
                     for(int pipes{0}; pipes < m; ++ pipes){
                         if(out_node(i, pipes) == nodes){
                             T_tot = + T_output(i, pipes)*abs(data_2(i, pipes));
                             G_tot = + abs(data_2(i, pipes));
-                            std::cerr << "check final outlet\n";
+                            //std::cerr << "check final outlet\n";
                         }
                     }
                     T_final_outlet(nodes) = T_tot/G_tot;
 
                 }else{
-                    std::cerr << "checking\n";
-//                    for(int pipes{0}; pipes < m; ++ pipes){
-//                        if(out_node(i, pipes) == nodes){
-//                            T_final_outlet(nodes) = T_output(i, pipes);
-//                        }
-//                    }
+                    //std::cerr << "checking\n";
+                    for(int pipes{0}; pipes < m; ++ pipes){
+                        if(out_node(i, pipes) == nodes){
+                            T_final_outlet(nodes) = T_output(i, pipes);
+                        }
+                    }
                 }
             }
-//            T_final_outlet(148) = 80;
-//            T_final_outlet(149) = 80;
-//            T_final_outlet(150) = 80;
-//            T_input = T_final_outlet;
-//            results.row(i-1) = T_final_outlet;
+
+            T_final_outlet(147) = 80;
+            T_final_outlet(148) = 80;
+            T_final_outlet(149) = 80;
+            T_input = T_final_outlet;
+            results.row(i) = T_final_outlet;
         }
 
 
