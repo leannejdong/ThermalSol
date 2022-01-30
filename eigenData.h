@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
+//#include <sstream>
 using std::vector;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -14,6 +15,8 @@ using Eigen::Matrix;
 using Eigen::Map;
 using Eigen::Dynamic;
 using Eigen::RowMajor;
+//using std::ostringstream;
+//using Eigen::EigenBase;
 
 namespace ThermalSol {
 
@@ -82,4 +85,5 @@ namespace ThermalSol {
         return b;
     }
 }
+
 #endif //THERMALSOL_EIGENDATA_H

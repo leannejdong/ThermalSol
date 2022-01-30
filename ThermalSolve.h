@@ -6,6 +6,7 @@
 #include "util.h"
 #include <typeinfo>
 #include <stdexcept>
+#include <fstream>
 
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
@@ -118,6 +119,8 @@ namespace ThermalSol{
         MatrixXd results = MatrixXd::Zero(168, n);
         MatrixXi in_node_Xi = in_node.cast<int>();
         MatrixXi out_node_Xi = out_node.cast<int>();
+        std::ofstream result_vec("data/outputs/results.csv");
+
         for(int i{0}; i < step; ++i){
             for(int j{0}; j < m; ++j){
                 if (data_2(i, j) < 0){
@@ -171,6 +174,9 @@ namespace ThermalSol{
             T_input = T_final_outlet;
             results.row(i) = T_final_outlet.transpose();
         }
+        saveData(result_vec, results);
+        //std::cout << "The results is of size: (" << results.row(i).rows() << "," << results.row(i).cols() << ")\n";
+       // std::cout << "The T_final_outlet is of size: (" << T_final_outlet.transpose().rows() << "," << T_final_outlet.transpose().cols() << ")\n";
     }
 
 
