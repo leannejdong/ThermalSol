@@ -129,7 +129,7 @@ namespace ThermalSol{
                     in_node/*_Xi*/(i, j) = S;
                  }
                 double C1 = 2*delta_t*U(j)/A(j)/rho/cp;
-                double C2 = 2*std::fabs(data_2(i, j))*delta_t/rho/A(j)/delta_x(j);
+                double C2 = 2*abs(data_2(i, j))*delta_t/rho/A(j)/delta_x(j);
                 double C = 1/(1+C1+C2);
                 T_t(0) = T_input(in_node/*_Xi*/(i, j));
                 for(size_t z{0}; z < 60; ++z){
@@ -149,7 +149,7 @@ namespace ThermalSol{
                     }
                 }
                 if(Count > 1){
-                    for(int pipes{0}; pipes < m; ++ pipes){
+                    for(size_t pipes{0}; pipes < m; ++ pipes){
                         if(out_node(i, pipes) == nodes){
                             T_tot = + T_output(i, pipes)*abs(data_2(i, pipes));
                             G_tot = + abs(data_2(i, pipes));
@@ -158,7 +158,9 @@ namespace ThermalSol{
                     }
                     TT << T_tot << "\n";
                     GG << G_tot << "\n";
-                    T_final_outlet(nodes) = T_tot/G_tot;
+                    if(G_tot!= 0){
+                        T_final_outlet(nodes) = T_tot/G_tot;
+                    }
 
                 }else{
                     //std::cerr << "checking\n";
