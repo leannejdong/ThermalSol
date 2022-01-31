@@ -123,10 +123,10 @@ namespace ThermalSol{
         for(size_t i{0}; i < step; ++i){
             for(size_t j{0}; j < m; ++j){
                 if (data_2(i, j) < 0){
-                    size_t S = out_node/*_Xi*/(i, j);
-                    size_t N = in_node/*_Xi*/(i, j);
-                    out_node/*_Xi*/(i, j) = N;
-                    in_node/*_Xi*/(i, j) = S;
+                    size_t S = out_node(i, j);
+                    size_t N = in_node(i, j);
+                    out_node(i, j) = N;
+                    in_node(i, j) = S;
                  }
                 double C1 = 2*delta_t*U(j)/A(j)/rho/cp;
                 double C2 = 2*abs(data_2(i, j))*delta_t/rho/A(j)/delta_x(j);
@@ -145,7 +145,6 @@ namespace ThermalSol{
                 for(size_t pipes{0}; pipes < m; ++ pipes){
                     if(out_node(i, pipes) == nodes){
                         ++Count;
-                        //T_final_outlet(nodes) = T_output(i, pipes);
                     }
                 }
                 if(Count > 1){
@@ -153,7 +152,6 @@ namespace ThermalSol{
                         if(out_node(i, pipes) == nodes){
                             T_tot = + T_output(i, pipes)*abs(data_2(i, pipes));
                             G_tot = + abs(data_2(i, pipes));
-                            //std::cerr << "check final outlet\n";
                         }
                     }
                     TT << T_tot << "\n";
@@ -161,9 +159,7 @@ namespace ThermalSol{
                     if(G_tot!= 0){
                         T_final_outlet(nodes) = T_tot/G_tot;
                     }
-
                 }else{
-                    //std::cerr << "checking\n";
                     for(size_t pipes{0}; pipes < m; ++ pipes){
                         if(out_node(i, pipes) == nodes){
                             T_final_outlet(nodes) = T_output(i, pipes);
@@ -179,10 +175,6 @@ namespace ThermalSol{
         }
         saveData(result_vec, results );
 
-        //saveVec(result_vec, results.rowwise() );
-
-        //std::cout << "The results is of size: (" << results.row(i).rows() << "," << results.row(i).cols() << ")\n";
-       // std::cout << "The T_final_outlet is of size: (" << T_final_outlet.transpose().rows() << "," << T_final_outlet.transpose().cols() << ")\n";
     }
 
 
