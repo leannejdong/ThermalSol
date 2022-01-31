@@ -38,6 +38,22 @@ namespace ThermalSol {
         }
     }
 
+    inline void saveVec(std::ofstream &file, /*std::string fileName,*/ VectorXd vector) {
+        //https://eigen.tuxfamily.org/dox/structEigen_1_1IOFormat.html
+        const static IOFormat CSVFormat(FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+
+        // std::ofstream file(fileName);
+        if (!file) return;
+        {
+            for (size_t i{0}; i < vector.size(); ++i) {
+               if(vector(i)   == -0){
+                   vector(i) = 0;
+               }
+            }
+            file << vector.format(CSVFormat) << "\n";
+        }
+    }
+
     inline MatrixXd openData(std::string fileToOpen) {
         vector<double> matrixEntries;
 
@@ -74,9 +90,9 @@ namespace ThermalSol {
         return Map<Matrix<double, Dynamic, Dynamic, RowMajor>>(matrixEntries.data(), matrixRowNumber, matrixEntries.size() / matrixRowNumber);
     }
 
-    inline VectorXd makeEigenVectorFromVectors(const vector<double> &vecvalues) {
+    inline Eigen::Vector<size_t, Eigen::Dynamic> makeEigenVectorFromVectors(const vector<size_t> &vecvalues) {
         size_t n = vecvalues.size();
-        VectorXd b(n);
+        Eigen::Vector<size_t, Eigen::Dynamic> b(n);
 
         for (size_t i = 0; i < n; ++i) {
             b(i) = vecvalues[i];

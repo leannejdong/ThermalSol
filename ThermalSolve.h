@@ -55,12 +55,12 @@ namespace ThermalSol{
 //        } catch (std::invalid_argument const& ex){
 //            std::cout << " a standard exception was caught, with message : " << ex.what() << "\n";
 //        }
-        const size_t n = stoul(data[0][0]);
-        const size_t m = stoul(data[0][1]);
+        const auto n = stoul(data[0][0]);
+        const auto m = stoul(data[0][1]);
 
 
         //! Source nodes
-        const size_t source = stoul(data[0][5]);
+        const auto source = stoul(data[0][5]);
         vector<string> col4, col5;
         std::cerr << "the number of rows is " << m << "\n";
         for (size_t i = 0; i < m; ++i) {
@@ -68,13 +68,13 @@ namespace ThermalSol{
             col5.push_back(data[i][4]);
         }
 
-        vector<double> col4_int, col5_int;
+        vector<size_t> col4_int, col5_int;
         for (auto c2 : col4) {
             col4_int.push_back(stoi(c2));
         }
         //! c++ index from 0, so subtract 1 from each element of our vector
         for (auto &e2 : col4_int) {
-            e2 -= 1.00;
+            e2 -= 1;
         }
 
         for (auto c3 : col5) {
@@ -82,18 +82,18 @@ namespace ThermalSol{
         }
 
         for (auto &e5 : col5_int) {
-            e5 -= 1.00;
+            e5 -= 1;
         }
 
         //!  create a matrix of in and out nodes for each time step
-        VectorXd in = makeEigenVectorFromVectors(col4_int);
-        VectorXd out = makeEigenVectorFromVectors(col5_int);
-        MatrixXd in_node = MatrixXd::Zero(168, m);
-        MatrixXd out_node = MatrixXd::Zero(168, m);
+        Eigen::Vector<size_t, Eigen::Dynamic> in = makeEigenVectorFromVectors(col4_int);
+        Eigen::Vector<size_t, Eigen::Dynamic> out = makeEigenVectorFromVectors(col5_int);
+        Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic> in_node = Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic>::Zero(168, m);
+        Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic> out_node = Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic>::Zero(168, m);
         in_node.rowwise() =   in.transpose();
         out_node.rowwise() = out.transpose();
         MatrixXd data_2 = openData("data/M.csv");
-        int step =  data_2.rows();
+        size_t step =  data_2.rows();
 
         //! read pipes' lengths, diameter and U value from the Pipes_information file
 
@@ -102,11 +102,10 @@ namespace ThermalSol{
         VectorXd diameters = data_3.col(1);
         VectorXd U = data_3.col(4);
         VectorXd A = pow(diameters.array(), 2)*PI/4;
-//
         //! time and spatial steps
-        const int dx = 20;
+        const size_t dx = 20;
         VectorXd delta_x = length/dx;
-        const int delta_t = 60;
+        const size_t delta_t = 60;
 
         //! Solution
         MatrixXd T_deltat = MatrixXd::Zero(159, dx+1);
@@ -117,33 +116,31 @@ namespace ThermalSol{
         MatrixXd T_output = MatrixXd::Zero(168, m);
         MatrixXd T_final_outlet = VectorXd::Zero( n);
         MatrixXd results = MatrixXd::Zero(168, n);
-        MatrixXi in_node_Xi = in_node.cast<int>();
-        MatrixXi out_node_Xi = out_node.cast<int>();
         std::ofstream result_vec("data/outputs/results.csv");
 
-        for(int i{0}; i < step; ++i){
-            for(int j{0}; j < m; ++j){
+        for(size_t i{0}; i < step; ++i){
+            for(size_t j{0}; j < m; ++j){
                 if (data_2(i, j) < 0){
-                    int S = out_node_Xi(i, j);
-                    int N = in_node_Xi(i, j);
-                    out_node_Xi(i, j) = N;
-                    in_node_Xi(i, j) = S;
+                    size_t S = out_node/*_Xi*/(i, j);
+                    size_t N = in_node/*_Xi*/(i, j);
+                    out_node/*_Xi*/(i, j) = N;
+                    in_node/*_Xi*/(i, j) = S;
                  }
                 double C1 = 2*delta_t*U(j)/A(j)/rho/cp;
                 double C2 = 2*std::fabs(data_2(i, j))*delta_t/rho/A(j)/delta_x(j);
                 double C = 1/(1+C1+C2);
-                T_t(0) = T_input(in_node_Xi(i, j));
-                for(int z{0}; z < 60; ++z){
-                    for(int k{0}; k < dx; ++k){
+                T_t(0) = T_input(in_node/*_Xi*/(i, j));
+                for(size_t z{0}; z < 60; ++z){
+                    for(size_t k{0}; k < dx; ++k){
                         T_t( k+1) = C*(T_deltat(j, k+1)+ C1*Tg + C2*T_t(k));
                     }
                     T_deltat.row(j) = T_t;
                 }
                 T_output(i, j) = T_t(dx);
             }
-            for(int nodes{0}; nodes < n; ++nodes ){
-                double T_tot{0}, G_tot{0}; int Count{0};
-                for(int pipes{0}; pipes < m; ++ pipes){
+            for(size_t nodes{0}; nodes < n; ++nodes ){
+                long double T_tot{0}, G_tot{0}; size_t Count{0};
+                for(size_t pipes{0}; pipes < m; ++ pipes){
                     if(out_node(i, pipes) == nodes){
                         ++Count;
                         //T_final_outlet(nodes) = T_output(i, pipes);
@@ -161,7 +158,7 @@ namespace ThermalSol{
 
                 }else{
                     //std::cerr << "checking\n";
-                    for(int pipes{0}; pipes < m; ++ pipes){
+                    for(size_t pipes{0}; pipes < m; ++ pipes){
                         if(out_node(i, pipes) == nodes){
                             T_final_outlet(nodes) = T_output(i, pipes);
                         }
@@ -174,7 +171,9 @@ namespace ThermalSol{
             T_input = T_final_outlet;
             results.row(i) = T_final_outlet.transpose();
         }
-        saveData(result_vec, results);
+        saveData(result_vec, results );
+        //saveVec(result_vec, results.rowwise() );
+
         //std::cout << "The results is of size: (" << results.row(i).rows() << "," << results.row(i).cols() << ")\n";
        // std::cout << "The T_final_outlet is of size: (" << T_final_outlet.transpose().rows() << "," << T_final_outlet.transpose().cols() << ")\n";
     }
