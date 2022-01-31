@@ -62,7 +62,7 @@ namespace ThermalSol{
         //! Source nodes
         const auto source = stoul(data[0][5]);
         vector<string> col4, col5;
-        std::cerr << "the number of rows is " << m << "\n";
+        // std::cerr << "the number of rows is " << m << "\n";
         for (size_t i = 0; i < m; ++i) {
             col4.push_back(data[i][3]);
             col5.push_back(data[i][4]);
@@ -117,6 +117,8 @@ namespace ThermalSol{
         MatrixXd T_final_outlet = VectorXd::Zero( n);
         MatrixXd results = MatrixXd::Zero(168, n);
         std::ofstream result_vec("data/outputs/results.csv");
+        std::ofstream TT("data/outputs/T_tot.csv");
+        std::ofstream GG("data/outputs/G_tot.csv");
 
         for(size_t i{0}; i < step; ++i){
             for(size_t j{0}; j < m; ++j){
@@ -154,6 +156,8 @@ namespace ThermalSol{
                             //std::cerr << "check final outlet\n";
                         }
                     }
+                    TT << T_tot << "\n";
+                    GG << G_tot << "\n";
                     T_final_outlet(nodes) = T_tot/G_tot;
 
                 }else{
@@ -172,6 +176,7 @@ namespace ThermalSol{
             results.row(i) = T_final_outlet.transpose();
         }
         saveData(result_vec, results );
+
         //saveVec(result_vec, results.rowwise() );
 
         //std::cout << "The results is of size: (" << results.row(i).rows() << "," << results.row(i).cols() << ")\n";
