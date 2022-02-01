@@ -11,7 +11,7 @@
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
 using std::cerr;
-using Pair = std::vector<std::pair<int, int>>;
+//using Pair = std::vector<std::pair<int, int>>;
 using std::pow;
 const int Tg = 3;
 const int T_initial = 80;
@@ -60,7 +60,7 @@ namespace ThermalSol{
 
 
         //! Source nodes
-        const auto source = stoul(data[0][5]);
+        //const auto source = stoul(data[0][5]);
         vector<string> col4, col5;
         // std::cerr << "the number of rows is " << m << "\n";
         for (size_t i = 0; i < m; ++i) {
@@ -141,7 +141,7 @@ namespace ThermalSol{
                 T_output(i, j) = T_t(dx);
             }
             for(size_t nodes{0}; nodes < n; ++nodes ){
-                long double T_tot{0}, G_tot{0}; size_t Count{0};
+                double T_tot{0}; double G_tot{0}; size_t Count{0};
                 for(size_t pipes{0}; pipes < m; ++ pipes){
                     if(out_node(i, pipes) == nodes){
                         ++Count;
@@ -150,8 +150,8 @@ namespace ThermalSol{
                 if(Count > 1){
                     for(size_t pipes{0}; pipes < m; ++ pipes){
                         if(out_node(i, pipes) == nodes){
-                            T_tot = + T_output(i, pipes)*abs(data_2(i, pipes));
-                            G_tot = + abs(data_2(i, pipes));
+                             T_tot = T_tot + T_output(i, pipes)*abs(data_2(i, pipes));
+                             G_tot = G_tot +abs(data_2(i, pipes));
                         }
                     }
                     TT << T_tot << "\n";
