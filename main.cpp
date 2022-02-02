@@ -1,8 +1,5 @@
 #include <iostream>
 #include "ThermalSolve.h"
-
-
-
 int main() {
     try {
         ThermalSol::ThermalSolve();
